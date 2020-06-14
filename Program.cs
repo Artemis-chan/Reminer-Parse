@@ -5,7 +5,7 @@ namespace reminder_parse
 {
     class Program
     {
-        static void Main(string[] args) //test sentence: remind me to something lipsum ipsum etc in 2 hours 5 minute
+        static void Main(string[] args) //test sentence: remind me to something lipsum ipsum etc in 2 hours 5 minute asdadwad
         {
             if (args.Length < 1)
             {
@@ -14,19 +14,19 @@ namespace reminder_parse
 
             ulong timeSeconds = 0;
 
-            string q = string.Join(' ', args).ToLower();
-            if(Regex.IsMatch(q, @"remind me to .+ in (\d+ (hours?|minutes?|days?)(\s?)+)+"))
+            string q = string.Join(' ', args);
+            if(Regex.IsMatch(q, @"remind me to .+ in (\d+ (hours?|minutes?|days?)(\s?)+)+", RegexOptions.IgnoreCase))
             {
                 //Time
-                var matches = Regex.Matches(q, @"\d+ (hours?|minutes?|days?)");
+                var matches = Regex.Matches(q, @"\d+ (hours?|minutes?|days?)", RegexOptions.IgnoreCase);
                 foreach (Match m in matches)
                 {
-                    if(m.Success)
+                    if (m.Success)
                     {
                         var temp = m.Value.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
-                        if(ulong.TryParse(temp[0], out ulong time))
+                        if (ulong.TryParse(temp[0], out ulong time))
                         {
-                            timeSeconds += time * TimeModifier(temp[1]);
+                            timeSeconds += time * TimeModifier(temp[1].ToLower());
                         }
                     }
                 }
@@ -34,7 +34,8 @@ namespace reminder_parse
                 Console.WriteLine($"Time: {timeSeconds} Seconds");
 
                 //Note
-                //var match = Regex.Match(q, @"");
+                var match = Regex.Match(q, @"(?<=remind me to).+(?=(in (\d+ (hours?|minutes?|days?)(\s?)+)+))", RegexOptions.IgnoreCase);
+                Console.WriteLine($"Todo: { match.Value.Trim() }");
             }
         }
 
